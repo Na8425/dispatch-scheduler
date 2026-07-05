@@ -18,9 +18,21 @@ import { queueScheduledJobsRouter, scheduledJobRouter } from './routes/scheduled
 import { metricsRouter } from './routes/metrics.routes';
 
 const corsOptions: cors.CorsOptions = {
-  origin: process.env.FRONTEND_URL
-    ? process.env.FRONTEND_URL
-    : (_origin: string | undefined, cb: (err: Error | null, allow?: boolean) => void) => cb(null, true),
+  origin: (origin: string | undefined, cb: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin) {
+      cb(null, true);
+      return;
+    }
+    const isLocalhost = origin.startsWith('http://localhost:') || origin === 'http://localhost';
+    const isVercel = origin.endsWith('.vercel.app');
+    const isConfigured = process.env.FRONTEND_URL ? origin === process.env.FRONTEND_URL.replace(/\/$/, '') : false;
+
+    if (isLocalhost || isVercel || isConfigured) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
