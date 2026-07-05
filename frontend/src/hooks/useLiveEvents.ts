@@ -29,7 +29,8 @@ export function useLiveEvents(projectId: string | null, onEvent?: (e: LiveEvent)
   useEffect(() => {
     if (!projectId || !token) return;
 
-    const socket = io('/', { auth: { token }, path: '/socket.io' });
+    const socketUrl = import.meta.env.VITE_API_URL ?? '/';
+    const socket = io(socketUrl, { auth: { token }, path: '/socket.io' });
     socketRef.current = socket;
 
     socket.on('connect', () => {

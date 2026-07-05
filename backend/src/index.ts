@@ -18,7 +18,11 @@ import { queueScheduledJobsRouter, scheduledJobRouter } from './routes/scheduled
 import { metricsRouter } from './routes/metrics.routes';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL : '*',
+  credentials: true,
+}));
+
 app.use(express.json({ limit: '2mb' }));
 app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === '/health' } }));
 
