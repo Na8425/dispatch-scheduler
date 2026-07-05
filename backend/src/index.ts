@@ -19,7 +19,9 @@ import { metricsRouter } from './routes/metrics.routes';
 
 const app = express();
 app.use(cors({
-  origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL : '*',
+  origin: process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL
+    : (_origin: string | undefined, cb: (err: Error | null, allow?: boolean) => void) => cb(null, true),
   credentials: true,
 }));
 
