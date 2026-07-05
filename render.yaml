@@ -1,0 +1,49 @@
+services:
+  # 1. API Server (Web Service)
+  - type: web
+    name: dispatch-job-api
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:api
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        value: change_me_to_a_long_random_string_12345
+      - key: DATABASE_URL
+        sync: false # User will paste their Railway Postgres URL here
+      - key: REDIS_URL
+        sync: false # User will paste their Railway Redis URL here
+
+  # 2. Worker Daemon (Background Worker)
+  - type: worker
+    name: dispatch-job-worker
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:worker
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: WORKER_PROJECT_ID
+        sync: false # User will set this after running seed
+
+  # 3. Scheduler Process (Background Worker)
+  - type: worker
+    name: dispatch-job-scheduler
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:scheduler
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
