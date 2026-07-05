@@ -17,13 +17,18 @@ import { queueDlqRouter, dlqEntryRouter } from './routes/dlq.routes';
 import { queueScheduledJobsRouter, scheduledJobRouter } from './routes/scheduledJobs.routes';
 import { metricsRouter } from './routes/metrics.routes';
 
-const app = express();
-app.use(cors({
+const corsOptions: cors.CorsOptions = {
   origin: process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL
     : (_origin: string | undefined, cb: (err: Error | null, allow?: boolean) => void) => cb(null, true),
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // handle preflight for all routes
+
 
 app.use(express.json({ limit: '2mb' }));
 app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === '/health' } }));
